@@ -12,14 +12,33 @@ import PageNotFound from './components/PageNotFound';
 import FakeData from './components/FakeData';
 
 class App extends Component {
-  
+  state ={
+    course : []
+  }
 
-  render(){
-    let course = []
+  componentDidMount() {
     if(localStorage && localStorage.getItem('courses')){
-      course = JSON.parse(localStorage.getItem('courses'))
+
+      this.setState({
+        course : JSON.parse(localStorage.getItem('courses'))
+      })
+     
     }
+  }
+
+  deleteCourse = (courseDelete) =>{
+    const coursArr = [...this.state.course];
+    const index= coursArr.findIndex(item => item.id=== courseDelete.id);
+    coursArr.splice(index,1);
+    localStorage.setItem('courses', JSON.stringify(coursArr));
+    this.setState({
+      course:[...coursArr],
+    })
+  }
+  
+  render(){
     
+    const {course} =this.state
     return (
       <div className="App">
         <Header />
@@ -28,7 +47,7 @@ class App extends Component {
           <Switch>
             <Route 
               path="/" exact 
-              render={() => <CourseList course={course} />} 
+              render={() => <CourseList course={course} deleteCourse={this.deleteCourse} />} 
             />
             <Route 
               path="/course-detail/:id" exact 
@@ -41,7 +60,7 @@ class App extends Component {
 
             <Route 
               path="/edit-course/:id" exact
-              render={() => <CourseAction />}
+              render={({match}) => <CourseAction match={match} course={course} />}
             />
             
             <Route 

@@ -40,6 +40,12 @@ class Header extends Component {
                   <NavItem>
                     <NavLink href="https://github.com/reactstrap/reactstrap">GitHub</NavLink>
                   </NavItem>
+
+                  <NavItem>
+                    <NavLink href="/create-course">Create</NavLink>
+                  </NavItem>
+
+
                   <UncontrolledDropdown nav inNavbar>
                     <DropdownToggle nav caret>
                       Options

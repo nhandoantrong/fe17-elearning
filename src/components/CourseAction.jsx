@@ -5,8 +5,17 @@ class CourseAction extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            title: "",
-            desc: ""
+            course : {
+                title: "",
+                desc: "",
+                price: "Liên hệ",
+                rates: 3,
+                src: "https://topdev.vn/blog/wp-content/uploads/2017/07/vuejs.png",
+                id: "",
+            },
+
+            isEdit : false,
+            index: -1,
         }        
     }
     
@@ -14,17 +23,55 @@ class CourseAction extends Component {
         console.log(e.target.name, e.target.value)
         this.setState({
             // computed ed6
-            [e.target.name]: e.target.value,
+            course: {...this.state.course,[e.target.name] : e.target.value},
         })
+    }
+
+    handleOnSubmit = (e) =>{
+        e.preventDefault();
+        if (this.state.isEdit)
+            this.editCourse();
+        else 
+            this.addCourse();
+    }
+
+    addCourse = () =>{
+        const newCourse = {...this.state.course,id : new Date().getTime().toString()}
+        
+        const courseList = JSON.parse(localStorage.getItem('courses'));
+        courseList.push(newCourse);
+        localStorage.setItem('courses', JSON.stringify(courseList));
+    }
+
+    editCourse = () =>{
+        const courseArr = this.props.course;
+        const index = this.state.index;
+        courseArr[index]= this.state.course;
+        localStorage.setItem('courses', JSON.stringify(courseArr));
+    }
+
+    componentDidMount(){
+        if (this.props.match){
+            const id = this.props.match.params.id;
+            const index = this.props.course.findIndex(course => course.id == id);
+            const course = this.props.course[index];
+
+            this.setState({isEdit: true, course:{...course} , index})
+        }
+        else{
+            this.setState({
+                isEdit: false
+            })
+        }
     }
 
     render() {
         return (
             <div>
-                <h1>THÊM/SỬA KHÓA HỌC</h1>
+                <h1>{this.state.isEdit? "SỬA" : "THÊM"} KHÓA HỌC</h1>
 
                 <Container className="text-left">
-                    <Form>
+                    <Form onSubmit={this.handleOnSubmit}>
                         <FormGroup>
                             <Label for="title">Title</Label>
                             <Input
@@ -33,7 +80,7 @@ class CourseAction extends Component {
                                 id="title"
                                 placeholder="Enter title"
                                 onChange={this.onChange}
-                                value={this.state.title}
+                                value={this.state.course.title}
                             />
                         </FormGroup>
 
@@ -45,9 +92,11 @@ class CourseAction extends Component {
                                 id="desc"
                                 placeholder="Enter desc"
                                 onChange={this.onChange}
-                                value={this.state.desc}
+                                value={this.state.course.desc}
                             />
                         </FormGroup>
+
+                        <Button>Submit</Button>
                     </Form>
                 </Container>
             </div>
