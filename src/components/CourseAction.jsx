@@ -4,7 +4,7 @@ import Swal from 'sweetalert2'
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import {connect} from 'react-redux';
-import {createCourse} from '../actions/courses';
+import {createCourse, editCourse} from '../actions/courses';
 
 class CourseAction extends Component {
     constructor(props) {
@@ -25,7 +25,6 @@ class CourseAction extends Component {
     }
 
     onChange = (e) => {
-        console.log(e.target.name, e.target.value)
         this.setState({
             // computed ed6
             course: { ...this.state.course, [e.target.name]: e.target.value },
@@ -47,15 +46,19 @@ class CourseAction extends Component {
         }).then((result) => {
             if (result.value) {
                 if (this.state.isEdit){
-                    this.editCourse();
-                    this.notify()
+                    this.props.editCourse(this.state.course);
+                    // this.notify()
                     
                     this.props.history.push('/')
                     }
                 else {
                     // Swal.fire('Hello world!')
                     // this.addCourse();
-                    this.props.createCourse(this.state.course)
+                    this.setState({
+                        course: {...this.state.course, id: new Date().getTime()}
+                    }, () => {
+                        this.props.createCourse(this.state.course)
+                    })
                     
                     this.props.history.push('/')
                 }
@@ -65,21 +68,21 @@ class CourseAction extends Component {
         // window.location.reload();
     }
 
-    addCourse = () => {
-        const newCourse = { ...this.state.course, id: new Date().getTime().toString() }
+    // addCourse = () => {
+    //     const newCourse = { ...this.state.course, id: new Date().getTime().toString() }
 
-        const courseList = JSON.parse(localStorage.getItem('courses'));
-        courseList.push(newCourse);
-        localStorage.setItem('courses', JSON.stringify(courseList));
+    //     const courseList = JSON.parse(localStorage.getItem('courses'));
+    //     courseList.push(newCourse);
+    //     localStorage.setItem('courses', JSON.stringify(courseList));
 
-    }
+    // }
 
-    editCourse = () => {
-        const courseArr = this.props.courses;
-        const index = this.state.index;
-        courseArr[index] = this.state.course;
-        localStorage.setItem('courses', JSON.stringify(courseArr));
-    }
+    // editCourse = () => {
+    //     const courseArr = this.props.courses;
+    //     const index = this.state.index;
+    //     courseArr[index] = this.state.course;
+    //     localStorage.setItem('courses', JSON.stringify(courseArr));
+    // }
 
     componentDidMount() {
         if (this.props.match) {
@@ -171,6 +174,9 @@ const mapDispatchToProps = (dispatch) => {
     return {
         createCourse: (course) => {
             dispatch(createCourse(course))
+        },
+        editCourse: (course) => {
+            dispatch(editCourse(course))
         }
     }
 }

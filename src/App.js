@@ -27,15 +27,15 @@ class App extends Component {
   //   }
   // }
 
-  deleteCourse = (courseDelete) =>{
-    const coursArr = [...this.state.course];
-    const index= coursArr.findIndex(item => item.id=== courseDelete.id);
-    coursArr.splice(index,1);
-    localStorage.setItem('courses', JSON.stringify(coursArr));
-    this.setState({
-      course:[...coursArr],
-    })
-  }
+  // deleteCourse = (courseDelete) =>{
+  //   const coursArr = [...this.state.course];
+  //   const index= coursArr.findIndex(item => item.id=== courseDelete.id);
+  //   coursArr.splice(index,1);
+  //   localStorage.setItem('courses', JSON.stringify(coursArr));
+  //   this.setState({
+  //     course:[...coursArr],
+  //   })
+  // }
   
   render(){
     
@@ -51,7 +51,7 @@ class App extends Component {
           <Switch>
             <Route 
               path="/" exact 
-              render={() => <CourseList deleteCourse={this.deleteCourse} />} 
+              render={() => <CourseList />} 
             />
             <Route 
               path="/course-detail/:id" exact 

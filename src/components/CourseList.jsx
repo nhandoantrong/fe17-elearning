@@ -3,6 +3,7 @@ import {Container, Row } from 'reactstrap'
 import Course from './Course'
 import ModalDetailCourse from './ModalDetailCourse';
 import {connect} from 'react-redux'
+import {deleteCourse} from '../actions/courses';
 
 class CourseList extends Component {
 
@@ -23,7 +24,8 @@ class CourseList extends Component {
                 key={index}
 
                 openModal ={this.openModal}
-                deleteCourse={this.props.deleteCourse}
+                // deleteCourse={() => this.props.deleteCourse(course.id)}
+                deleteCourse={this.props.deleteCourse.bind(this, course.id)}
             />
         })
         return (
@@ -47,5 +49,13 @@ const mapStateToProps = (state) => {
     }
 }
 
-export default connect(mapStateToProps)(CourseList);
+const mapDispatchToProps = (dispatch) => {
+    return {
+        deleteCourse: (id) => {
+            dispatch(deleteCourse(id))
+        }
+    }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(CourseList);
 // higher order component ==> decorator
