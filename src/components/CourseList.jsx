@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import {Container, Row } from 'reactstrap'
 import Course from './Course'
 import ModalDetailCourse from './ModalDetailCourse';
+import {connect} from 'react-redux'
 
 class CourseList extends Component {
 
@@ -16,7 +17,7 @@ class CourseList extends Component {
     }
 
     render() {
-        const elmCourse = this.props.course.map((course, index) => {
+        const elmCourse = this.props.courses.map((course, index) => {
             return <Course 
                 course={course}
                 key={index}
@@ -40,4 +41,11 @@ class CourseList extends Component {
     }
 }
 
-export default CourseList;
+const mapStateToProps = (state) => {
+    return {
+        courses: state.coursesReducer
+    }
+}
+
+export default connect(mapStateToProps)(CourseList);
+// higher order component ==> decorator

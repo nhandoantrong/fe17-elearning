@@ -1,64 +1,95 @@
 import React, { Component } from 'react';
 import { Container, Button, Form, FormGroup, Label, Input, FormText } from 'reactstrap';
+import Swal from 'sweetalert2'
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import {connect} from 'react-redux';
+import {createCourse} from '../actions/courses';
 
 class CourseAction extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            course : {
+            course: {
                 title: "",
                 desc: "",
-                price: "Liên hệ",
-                rates: 3,
-                src: "https://topdev.vn/blog/wp-content/uploads/2017/07/vuejs.png",
+                price: "",
+                rates: "",
+                src: "",
                 id: "",
             },
 
-            isEdit : false,
+            isEdit: false,
             index: -1,
-        }        
+        }
     }
-    
+
     onChange = (e) => {
         console.log(e.target.name, e.target.value)
         this.setState({
             // computed ed6
-            course: {...this.state.course,[e.target.name] : e.target.value},
+            course: { ...this.state.course, [e.target.name]: e.target.value },
         })
     }
 
-    handleOnSubmit = (e) =>{
+    notify = () => toast("Wow so easy !");
+
+    handleOnSubmit = (e) => {
         e.preventDefault();
-        if (this.state.isEdit)
-            this.editCourse();
-        else 
-            this.addCourse();
+
+        Swal.fire({
+            title: 'Are you sure?',
+            type: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes !!!'
+        }).then((result) => {
+            if (result.value) {
+                if (this.state.isEdit){
+                    this.editCourse();
+                    this.notify()
+                    
+                    this.props.history.push('/')
+                    }
+                else {
+                    // Swal.fire('Hello world!')
+                    // this.addCourse();
+                    this.props.createCourse(this.state.course)
+                    
+                    this.props.history.push('/')
+                }
+            }
+        })
+
+        // window.location.reload();
     }
 
-    addCourse = () =>{
-        const newCourse = {...this.state.course,id : new Date().getTime().toString()}
-        
+    addCourse = () => {
+        const newCourse = { ...this.state.course, id: new Date().getTime().toString() }
+
         const courseList = JSON.parse(localStorage.getItem('courses'));
         courseList.push(newCourse);
         localStorage.setItem('courses', JSON.stringify(courseList));
+
     }
 
-    editCourse = () =>{
-        const courseArr = this.props.course;
+    editCourse = () => {
+        const courseArr = this.props.courses;
         const index = this.state.index;
-        courseArr[index]= this.state.course;
+        courseArr[index] = this.state.course;
         localStorage.setItem('courses', JSON.stringify(courseArr));
     }
 
-    componentDidMount(){
-        if (this.props.match){
+    componentDidMount() {
+        if (this.props.match) {
             const id = this.props.match.params.id;
-            const index = this.props.course.findIndex(course => course.id == id);
-            const course = this.props.course[index];
+            const index = this.props.courses.findIndex(course => course.id == id);
+            const course = this.props.courses[index];
 
-            this.setState({isEdit: true, course:{...course} , index})
+            this.setState({ isEdit: true, course: { ...course }, index })
         }
-        else{
+        else {
             this.setState({
                 isEdit: false
             })
@@ -68,7 +99,7 @@ class CourseAction extends Component {
     render() {
         return (
             <div>
-                <h1>{this.state.isEdit? "SỬA" : "THÊM"} KHÓA HỌC</h1>
+                <h1>{this.state.isEdit ? "SỬA" : "THÊM"} KHÓA HỌC</h1>
 
                 <Container className="text-left">
                     <Form onSubmit={this.handleOnSubmit}>
@@ -81,6 +112,30 @@ class CourseAction extends Component {
                                 placeholder="Enter title"
                                 onChange={this.onChange}
                                 value={this.state.course.title}
+                            />
+                        </FormGroup>
+
+                        <FormGroup>
+                            <Label for="price">Price</Label>
+                            <Input
+                                type="number"
+                                name="price"
+                                id="price"
+                                placeholder="Enter price"
+                                onChange={this.onChange}
+                                value={this.state.course.price}
+                            />
+                        </FormGroup>
+
+                        <FormGroup>
+                            <Label for="price">Thumbnail</Label>
+                            <Input
+                                type="text"
+                                name="src"
+                                id="src"
+                                placeholder="Enter thumbnail"
+                                onChange={this.onChange}
+                                value={this.state.course.src}
                             />
                         </FormGroup>
 
@@ -99,9 +154,25 @@ class CourseAction extends Component {
                         <Button>Submit</Button>
                     </Form>
                 </Container>
+
+                <ToastContainer />
             </div>
-                );
-            }
+        );
+    }
+}
+
+const mapStateToProps = (state) => {
+    return {
+        courses: state.coursesReducer
+    }
+}
+
+const mapDispatchToProps = (dispatch) => {
+    return {
+        createCourse: (course) => {
+            dispatch(createCourse(course))
         }
-        
-export default CourseAction;
+    }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(CourseAction);

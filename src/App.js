@@ -13,18 +13,19 @@ import FakeData from './components/FakeData';
 
 class App extends Component {
   state ={
-    course : []
+    courses : []
   }
 
-  componentDidMount() {
-    if(localStorage && localStorage.getItem('courses')){
+  // componentDidMount() {
+  //   console.log('componentDidMount')
+  //   if(localStorage && localStorage.getItem('courses')){
 
-      this.setState({
-        course : JSON.parse(localStorage.getItem('courses'))
-      })
+  //     this.setState({
+  //       courses : JSON.parse(localStorage.getItem('courses'))
+  //     })
      
-    }
-  }
+  //   }
+  // }
 
   deleteCourse = (courseDelete) =>{
     const coursArr = [...this.state.course];
@@ -38,29 +39,32 @@ class App extends Component {
   
   render(){
     
-    const {course} =this.state
+    const {courses} =this.state
+		console.log("TCL: App -> render -> course", courses)
     return (
       <div className="App">
-        <Header />
 
         <BrowserRouter>
+        
+          <Header />
+
           <Switch>
             <Route 
               path="/" exact 
-              render={() => <CourseList course={course} deleteCourse={this.deleteCourse} />} 
+              render={() => <CourseList deleteCourse={this.deleteCourse} />} 
             />
             <Route 
               path="/course-detail/:id" exact 
-              render={({match}) => <CourseDetail match={match} course={course} />} />
+              render={({match}) => <CourseDetail match={match} />} />
 
             <Route 
               path="/create-course" exact
-              render={() => <CourseAction />}
+              render={({history}) => <CourseAction history={history} />}
             />
 
             <Route 
               path="/edit-course/:id" exact
-              render={({match}) => <CourseAction match={match} course={course} />}
+              render={({match, history}) => <CourseAction match={match} history={history} courses={courses} />}
             />
             
             <Route 
